@@ -12,9 +12,10 @@ const Button = styled.button`
   color: ${({ color }) => color};
   font-weight: 800;
   cursor: pointer;
-  transition: ease all 100ms;
+
   &:active {
-    box-shadow: -2px -2px black;
+    box-shadow: 0px 0px black;
+    transform: translateX(2px) translateY(2px);
   }
 `;
 
