@@ -1,5 +1,5 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import firebase from "firebase";
+import firebase from "../../firebase";
 import { auth } from "../../firebase";
 
 const initialState = {
@@ -11,7 +11,6 @@ const initialState = {
 export const singInWithGoogle = createAsyncThunk(
   "auth/singnInWithGoogle",
   async (_, thunkApi) => {
-    console.log("LOGGING IN");
     const provider = new firebase.auth.GoogleAuthProvider();
     auth
       .signInWithPopup(provider)

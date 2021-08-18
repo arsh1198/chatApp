@@ -10,7 +10,7 @@ const Card = styled.div`
   border: 1px solid black;
   padding: 2.25em 2.25em;
   font-family: "Roboto Mono", monospace;
-  background: ${({ color }) => color};
+  background: ${({ bg }) => bg};
   font-weight: 800;
 `;
 
