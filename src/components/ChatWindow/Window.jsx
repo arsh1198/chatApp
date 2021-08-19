@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import styled from "styled-components";
 import Button from "../UI/Button";
 import Input from "../UI/Input";
@@ -6,7 +6,9 @@ import Input from "../UI/Input";
 const Container = styled.div`
   display: flex;
   flex-direction: column;
-  width: 500px;
+  min-width: 400px;
+  max-width: 700px;
+  height: 600px;
   background: #e2e2e2;
   margin: 7em;
   border: 1px solid black;
@@ -25,8 +27,9 @@ const MessagesContainer = styled.div`
   /* display: flex;
   flex-direction: column; */
   background: #fff;
-  padding: 2em;
+  padding: 1em 1.5em;
   flex-grow: 1;
+  overflow-y: auto;
 `;
 
 const Footer = styled.div`
@@ -46,14 +49,31 @@ const buttonStyles = {
 
 const Window = ({ heading, children, onSendMessage }) => {
   const [inputVal, setInputVal] = useState("");
+  const messageContainerRef = useRef();
+
+  useEffect(() => {
+    if (messageContainerRef) {
+      messageContainerRef.current.addEventListener(
+        "DOMNodeInserted",
+        (event) => {
+          const { currentTarget: target } = event;
+          target.scroll({ top: target.scrollHeight, behavior: "smooth" });
+        }
+      );
+    }
+  }, []);
 
   return (
     <Container>
       <Header>{heading}</Header>
-      <MessagesContainer>{children}</MessagesContainer>
+      <MessagesContainer ref={messageContainerRef}>
+        {children}
+      </MessagesContainer>
       <form
-        onSubmit={() => {
+        onSubmit={(event) => {
+          event.preventDefault();
           onSendMessage(inputVal);
+          setInputVal("");
         }}
       >
         <Footer>

@@ -25,14 +25,14 @@ const UserImg = styled.img`
 const Home = () => {
   const dispatch = useDispatch();
   const { user } = useSelector((state) => state.auth);
-  const { room_id } = useSelector((state) => state.chat);
+  const { roomId } = useSelector((state) => state.chat);
   const [isModalOpen, setModalOpen] = useState(false);
 
   const history = useHistory();
 
   useEffect(() => {
-    if (room_id) history.push(`/room/${room_id}`);
-  }, [room_id]);
+    if (roomId) history.push(`/room/${roomId}`);
+  }, [roomId]);
 
   return (
     <Container>
