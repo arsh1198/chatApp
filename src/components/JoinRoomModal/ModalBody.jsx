@@ -9,6 +9,7 @@ const ModalBody = () => {
   return (
     <>
       <Input
+        required
         name="room-id"
         placeholder="Room ID"
         style={{ marginBottom: "1em" }}

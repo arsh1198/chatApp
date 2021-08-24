@@ -1,5 +1,11 @@
+import ColorHash from "color-hash";
 import React from "react";
 import styled from "styled-components";
+
+const getHashedColor = (textString) => {
+  const colorHash = new ColorHash({ lightness: 0.45 });
+  return colorHash.hex(textString);
+};
 
 const isValid = (user) => {
   return typeof user === "string" && user !== "";
@@ -17,14 +23,14 @@ const MessageBubble = styled.div`
   font-family: "Roboto Mono", monospace;
   font-size: 12px;
   float: ${({ user }) => (isValid(user) ? "left" : "right")};
-  margin-bottom: 1.52em;
+  margin-bottom: 1.25em;
 `;
 
 const User = styled.div`
   font-family: "Roboto Mono", monospace;
   font-size: 12px;
   font-weight: bold;
-  color: crimson;
+  color: ${({ user }) => getHashedColor(user)};
   margin-bottom: 0.5em;
 `;
 
@@ -37,7 +43,7 @@ const Message = ({ user, text, at, ...rest }) => {
   return (
     <MessageContainer user={user}>
       <MessageBubble user={user}>
-        {user && <User>{user}</User>}
+        {user && <User user={user}>{user}</User>}
         <div style={{ display: "flex", alignItems: "center" }}>
           {text}
           <Date>{at}</Date>

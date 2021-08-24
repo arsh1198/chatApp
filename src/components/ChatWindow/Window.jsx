@@ -39,6 +39,17 @@ const Footer = styled.div`
   border-top: 1px solid black;
 `;
 
+const NoMessages = styled.div`
+  display: flex;
+  height: 100%;
+  width: 100%;
+  align-items: center;
+  justify-content: center;
+  color: grey;
+  font-size: 14px;
+  font-family: "Roboto Mono", monospace;
+`;
+
 const inputStyles = { borderWidth: 0, flexGrow: 1 };
 
 const buttonStyles = {
@@ -50,9 +61,12 @@ const buttonStyles = {
 const Window = ({ heading, children, onSendMessage }) => {
   const [inputVal, setInputVal] = useState("");
   const messageContainerRef = useRef();
+  const [isDisabled, setIsDisabled] = useState(true);
 
   useEffect(() => {
     if (messageContainerRef) {
+      messageContainerRef.current.scrollTop =
+        messageContainerRef.current.scrollHeight;
       messageContainerRef.current.addEventListener(
         "DOMNodeInserted",
         (event) => {
@@ -67,7 +81,11 @@ const Window = ({ heading, children, onSendMessage }) => {
     <Container>
       <Header>{heading}</Header>
       <MessagesContainer ref={messageContainerRef}>
-        {children}
+        {children.length < 1 ? (
+          <NoMessages>No Messages in the chat yet!</NoMessages>
+        ) : (
+          children
+        )}
       </MessagesContainer>
       <form
         onSubmit={(event) => {
@@ -79,11 +97,18 @@ const Window = ({ heading, children, onSendMessage }) => {
         <Footer>
           <Input
             value={inputVal}
-            onChange={(event) => setInputVal(event.target.value)}
+            onChange={(event) => {
+              setInputVal(event.target.value);
+              if (event.target.value !== "") {
+                setIsDisabled(false);
+              } else {
+                setIsDisabled(true);
+              }
+            }}
             placeholder="Write a message..."
             style={inputStyles}
           />
-          <Button type="submit" style={buttonStyles}>
+          <Button disabled={isDisabled} type="submit" style={buttonStyles}>
             Send
           </Button>
         </Footer>

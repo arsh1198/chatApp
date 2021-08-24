@@ -19,11 +19,11 @@ const ChatWindow = ({ messages }) => {
       }
       heading={`Room ID => ${roomId}`}
     >
-      {messages.map(({ text, user, at }) => {
+      {messages.map(({ text, user, at, id }) => {
         return user === currentUser.displayName ? (
-          <Message text={text} at={at} />
+          <Message key={id} text={text} at={at} />
         ) : (
-          <Message user={user} text={text} at={at} />
+          <Message key={id} user={user} text={text} at={at} />
         );
       })}
     </Window>

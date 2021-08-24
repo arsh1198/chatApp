@@ -4,9 +4,9 @@ import firebase from "../../firebase";
 
 const initialState = {
   roomId: null,
-  participants: [],
-  messages: [],
-  joined_status: "pending", // 'pending' || 'joined' || 'error' // 🤷‍♂️
+  participants: null,
+  joined_status: "pending", // 'pending' || 'success' || 'error' // 🤷‍♂️
+  error: null,
 };
 
 export const createNewChatRoom = createAsyncThunk(
@@ -23,7 +23,7 @@ export const createNewChatRoom = createAsyncThunk(
     };
 
     await roomRef.set({
-      room_id: roomId,
+      roomId,
       created: firebase.firestore.Timestamp.now(),
     });
 
@@ -32,14 +32,26 @@ export const createNewChatRoom = createAsyncThunk(
       .doc(user.uid)
       .set(userAsParticipant);
 
-    return { room_id: roomId, participants: userAsParticipant };
+    return { roomId, participants: userAsParticipant };
   }
 );
 
 export const joinChatRoom = createAsyncThunk(
   "chat/joinChatRoom",
   async (roomId, thunkApi) => {
+    let participants = [];
+    // try {
     const user = auth.currentUser;
+    const roomsRef = await db.collection("chat-rooms");
+    const room = await roomsRef.where("roomId", "==", roomId).get();
+    const roomExists = !room.empty;
+    if (!roomExists) {
+      thunkApi.dispatch(
+        chatSlice.actions.handleError("No Room found with this ID!")
+      );
+    }
+    if (!roomExists) return;
+
     const roomRef = db.collection("chat-rooms").doc(roomId);
 
     const userAsParticipant = {
@@ -54,26 +66,48 @@ export const joinChatRoom = createAsyncThunk(
       .set(userAsParticipant);
 
     const participantsRef = await roomRef.collection("participants").get();
-    let participants = [];
-    participantsRef.forEach((doc) => participants.push(doc.data()));
 
-    return { room_id: roomId, participants };
+    participantsRef.forEach((doc) => participants.push(doc.data()));
+    // } catch (err) {
+    //   thunkApi.rejectWithValue(err);
+    // }
+
+    return { roomId, participants };
   }
 );
 
 export const chatSlice = createSlice({
   name: "chat",
   initialState,
-  reducers: {},
+  reducers: {
+    handleError: (state, action) => {
+      state.joined_status = "error";
+      state.error = action.payload;
+    },
+    clearChatState: (state, action) => {
+      console.log("CLEARING STATE");
+      state.error = null;
+      state.joined_status = "pending";
+      state.roomId = null;
+    },
+  },
   extraReducers: {
     [createNewChatRoom.fulfilled]: (state, action) => {
-      state.roomId = action.payload.room_id;
+      state.roomId = action.payload.roomId;
       state.participants.push(action.payload.participants);
+      state.joined_status = "success";
     },
     [joinChatRoom.fulfilled]: (state, action) => {
-      state.roomId = action.payload.room_id;
-      state.participants = action.payload.participants;
-      state.joined_status = "joined";
+      console.log("PAYLOAD =>", action.payload.roomId);
+      if (action.payload.roomId) {
+        state.roomId = action.payload.roomId;
+        state.participants = action.payload.participants;
+        state.joined_status = "success";
+      }
+    },
+    [joinChatRoom.rejected]: (state, action) => {
+      state.error = action.payload;
+      state.joined_status = "error";
     },
   },
 });

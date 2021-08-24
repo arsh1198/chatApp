@@ -4,11 +4,9 @@ import { auth, db } from "../../firebase";
 const formatDate = (unixTime) => new Date(unixTime * 1000).toLocaleTimeString();
 
 const initialState = {
-  roomId: null,
   messages: null,
   status: "pending", // "pending" || "success" || "error" //
   error: null,
-  unSubscribe_updates: null,
 };
 
 export const updateMessages = createAsyncThunk(
@@ -29,7 +27,7 @@ export const updateMessages = createAsyncThunk(
         });
         thunkApi.dispatch(messagesSlice.actions.setMessages(messages));
       });
-    return { unSubscribe };
+    // return { unSubscribe };
   }
 );
 
@@ -40,8 +38,9 @@ export const sendMessage = createAsyncThunk(
     const user = auth.currentUser;
     const roomRef = db.collection("chat-rooms").doc(roomId);
     const messagesRef = roomRef.collection("messages");
-
-    await messagesRef.doc().set({
+    const messageRef = messagesRef.doc();
+    await messageRef.set({
+      id: messageRef.id,
       user: user.displayName,
       text: message,
       at: new Date(),
@@ -69,12 +68,11 @@ export const messagesSlice = createSlice({
     [sendMessage.fulfilled]: (state) => {
       state.status = "success";
     },
-    [updateMessages.fulfilled]: (state, action) => {
-      state.unSubscribe_updates = action.payload.unSubscribe;
+    [sendMessage.pending]: (state) => {
+      state.status = "pending";
     },
-    [updateMessages.rejected]: (state, action) => {
-      state.error = action.payload;
-      state.status = "error";
+    [updateMessages.fulfilled]: (state) => {
+      state.status = "success";
     },
   },
 });
