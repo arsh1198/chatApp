@@ -19,6 +19,7 @@ const Email = styled.h4`
 const UserImg = styled.img`
   height: 50px;
   width: 50px;
+  margin-right: 20px;
   border: 1px solid black;
 `;
 
@@ -42,8 +43,6 @@ const Home = () => {
           style={{
             display: "flex",
             alignItems: "center",
-            width: "280px",
-            justifyContent: "space-between",
           }}
         >
           <UserImg src={user.photoURL} />
@@ -70,7 +69,7 @@ const Home = () => {
         </div>
         <Button
           elevated
-          style={{ width: "100%", zIndex: 2 }}
+          style={{ width: "284px", zIndex: 2 }}
           onClick={() => {
             auth.signOut();
           }}

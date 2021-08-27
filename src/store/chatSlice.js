@@ -4,7 +4,7 @@ import firebase from "../../firebase";
 
 const initialState = {
   roomId: null,
-  participants: null,
+  participants: [],
   joined_status: "pending", // 'pending' || 'success' || 'error' // 🤷‍♂️
   error: null,
 };

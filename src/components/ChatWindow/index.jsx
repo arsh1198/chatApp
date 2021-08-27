@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import Window from "./Window";
-import { DUMMY } from "../../dummyData";
 import Message from "./Message";
 import { auth } from "../../../firebase";
 import Loader from "../UI/Loader";
